@@ -57,6 +57,11 @@ function authApi(app) {
                 const createdUserId = await usersService.createUser({ user })
 
                 consoleSuccess("Auth - sign-up", "User created", Date.now())
+
+                res.status(201).json({
+                    data: createdUserId,
+                    message: 'user created'
+                });
             } catch (error) {
                 next(error)
             }

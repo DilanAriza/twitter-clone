@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const app = require('express')();
-const express = require('express')
+const express = require('express');
+const helmet = require('helmet');
 
 //Config file
 const { config } = require('./config/index.js');
@@ -10,7 +11,7 @@ const authApi = require('./routes/auth');
 
 //Config middlewares
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
 
 // Routes in action
 authApi(app);
