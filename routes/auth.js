@@ -8,7 +8,10 @@ const jwt = require('jsonwebtoken');
 const validationHandler = require('../utils/middleware/validationHandler');
 
 //Api Services
+const UsersService = require('../services/users');
 
+//Console Messages
+const { consoleSuccess } = require('../utils/messages/console/consoleFunctions');
 
 //Schemas
 const {
@@ -21,9 +24,14 @@ const { config } = require('../config/index');
 
 function authApi(app) {
 
+    //Config the router
     const router = express.Router();
     app.use('/api/auth', router);
 
+    //Initial instance for the services 
+    const usersService = new UsersService();
+
+    //ROUTES -
     router.post('/sign-in', async(req, res, next) => {
         const { apiKeyToken } = req.body;
 
@@ -37,16 +45,22 @@ function authApi(app) {
 
     });
 
-    router.post('/sign-up', validationHandler(createUserSchema), async(req, res, next) => {
-        const { body: user } = req;
+    router.post('/sign-up',
+        validationHandler(createUserSchema), async(
+            req,
+            res,
+            next
+        ) => {
+            const { body: user } = req;
 
-        try {
-            console.log(user);
-            res.send('Correct');
-        } catch (error) {
-            next(error)
-        }
-    })
+            try {
+                const createdUserId = await usersService.createUser({ user })
+
+                consoleSuccess("Auth - sign-up", "User created", Date.now())
+            } catch (error) {
+                next(error)
+            }
+        })
 }
 
 module.exports = authApi;

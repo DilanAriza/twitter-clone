@@ -1,14 +1,14 @@
 const boom = require('@hapi/boom');
 const joi = require('@hapi/joi');
 
-//Console error
-const { consoleError } = require('./../messages/console/consoleError');
+//Console Messages
+const { consoleError } = require('../messages/console/consoleFunctions');
 
 function validate(data, schema) {
     const schemaValid = joi.object(schema);
     const { error } = schemaValid.validate(data);
 
-    error && consoleError("Validation Handler - Valid data", error.message, Date());
+    error && consoleError("Validation Handler - Valid data", error.message, Date.now());
 
     return error
 }
