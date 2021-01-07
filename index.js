@@ -3,6 +3,16 @@ const app = require('express')();
 const express = require('express');
 const helmet = require('helmet');
 
+//error implementations
+const {
+    logErrors,
+    wrapErrors,
+    errorHandler
+} = require('./utils/middleware/errorHandlers');
+
+//404
+const notFoundHandler = require('./utils/middleware/notFoundHandler');
+
 //Config file
 const { config } = require('./config/index.js');
 
@@ -15,6 +25,13 @@ app.use(helmet());
 
 // Routes in action
 authApi(app);
+
+//Errors
+app.use(notFoundHandler);
+
+app.use(logErrors);
+app.use(wrapErrors);
+app.use(errorHandler);
 
 // Start server
 app.listen(config.port, function() {
