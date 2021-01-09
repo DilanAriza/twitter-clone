@@ -18,6 +18,7 @@ const { config } = require('./config/index.js');
 
 //Routers
 const authApi = require('./routes/auth');
+const userInformation = require('./routes/userInformation');
 
 //Config middlewares
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use(helmet());
 
 // Routes in action
 authApi(app);
+userInformation(app);
 
 //Errors
 app.use(notFoundHandler);

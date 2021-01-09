@@ -64,7 +64,6 @@ function authApi(app) {
                         next(Boom.unauthorized());
                     }
 
-
                     // extract data from user
                     const { _id: id, name, email } = user;
 

@@ -24,6 +24,11 @@ class UsersService {
 
         return createUserId;
     }
+
+    async getUserInformation({ userId }) {
+        const userInformation = await this.mongoDB.get(this.collection, userId);
+        return userInformation || {};
+    }
 }
 
 module.exports = UsersService;
