@@ -13,6 +13,7 @@ const {
 //Validations and middlewares
 const validationHandler = require('../utils/middleware/validationHandler');
 const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
+const getReqInformation = require('../utils/middleware/getInformation');
 
 //Cache response middlewares
 const cacheResponse = require('../utils/cacheResponse');
@@ -45,14 +46,47 @@ function userInformationApi(app) {
             const { email } = req.params;
 
             try {
-                const userInformation = await userInformationService.getUserInformation({ email });
 
-                res.status(200).json({
-                    data: userInformation,
-                    message: 'user information retrieved'
-                });
+                if (email === req.user.email) {
+                    const userInformation = await userInformationService.getUserInformation({ email });
+
+                    res.status(200).json({
+                        data: userInformation,
+                        message: 'user information retrieved'
+                    });
+                } else {
+                    next(new Error("No have permisions to modify data"));
+                }
+
             } catch (error) {
                 next(error)
+            }
+        }
+    )
+
+    router.post(
+        '/',
+        passport.authenticate('jwt', { session: false }),
+        scopesValidationHandler(['edit:personal']),
+        validationHandler(createUserInformationSchema),
+        async function(req, res, next) {
+            const { body: userInformation } = req;
+
+            try {
+
+                if (userInformation.email === req.user.email) {
+                    const createdUserInformationId = await userInformationService.createUserInformation({ userInformation });
+
+                    res.status(201).json({
+                        data: createdUserInformationId,
+                        message: 'User Information created'
+                    });
+                } else {
+                    next(new Error("No have permisions to modify data"));
+                }
+
+            } catch (error) {
+                next(error);
             }
         }
     )

@@ -11,6 +11,11 @@ class UserInformationService {
         const [userInformation] = await this.mongoDB.getAll(this.collection, { email });
         return userInformation;
     }
+
+    async createUserInformation({ userInformation }) {
+        const createdUserInformationId = await this.mongoDB.create(this.collection, userInformation);
+        return createdUserInformationId;
+    }
 }
 
 module.exports = UserInformationService;
