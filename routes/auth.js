@@ -98,17 +98,36 @@ function authApi(app) {
             res,
             next
         ) => {
+
+            // Asing data from body
             const { body: user } = req;
 
             try {
-                const createdUserId = await usersService.createUser({ user })
 
-                consoleSuccess("Auth - sign-up", "User created", Date.now())
 
-                res.status(201).json({
-                    data: createdUserId,
-                    message: 'user created'
-                });
+                // creating the query to verify the user is exist
+                const { email } = user;
+                const userIsExist = await usersService.getUser({ email })
+
+                //verify user is exist
+                if (userIsExist) {
+                    next(new Error("The data is a ready exist"));
+                } else {
+
+                    //Creatting user
+                    const createdUserId = await usersService.createUser({ user })
+
+                    //console success
+                    consoleSuccess("Auth - sign-up", "User created", Date.now())
+
+                    //response with user data
+                    res.status(201).json({
+                        data: createdUserId,
+                        message: 'user created'
+                    });
+
+                }
+
             } catch (error) {
                 next(error)
             }

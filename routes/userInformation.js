@@ -42,14 +42,20 @@ function userInformationApi(app) {
         scopesValidationHandler(['edit:personal']),
         async function(req, res, next) {
 
+            //Asing the cache response
             cacheResponse(req, FIVE_MINUTES_IN_SECONDS);
+            //Find the email in params
             const { email } = req.params;
 
             try {
 
+                //Verify the session, the user is required 
                 if (email === req.user.email) {
+
+                    //Getting user data
                     const userInformation = await userInformationService.getUserInformation({ email });
 
+                    //response with data
                     res.status(200).json({
                         data: userInformation,
                         message: 'user information retrieved'
@@ -74,13 +80,27 @@ function userInformationApi(app) {
 
             try {
 
+                //Verify the session, the user is required 
                 if (userInformation.email === req.user.email) {
-                    const createdUserInformationId = await userInformationService.createUserInformation({ userInformation });
 
-                    res.status(201).json({
-                        data: createdUserInformationId,
-                        message: 'User Information created'
-                    });
+                    // creating the query to verify the user data is exist
+                    const email = userInformation.email;
+                    const userIformationIsExist = await userInformationService.getUserInformation({ email });
+
+                    if (userIformationIsExist) {
+                        next(new Error("The data is a ready exist"));
+                    } else {
+
+                        //Creating user data
+                        const createdUserInformationId = await userInformationService.createUserInformation({ userInformation });
+
+                        //response with user data1
+                        res.status(201).json({
+                            data: createdUserInformationId,
+                            message: 'User Information created'
+                        });
+                    }
+
                 } else {
                     next(new Error("No have permisions to modify data"));
                 }
