@@ -5,6 +5,7 @@ const userIdSchema = Joi.string().regex(/^[0-9a-fA-F]{24}$/);
 const nameUserInformationSchema = Joi.string().max(30).required();
 const phoneNumberUserInformationSchema = Joi.number().required();
 const emailUserInformationSchema = Joi.string().email().required();
+const userUserInformationSchema = Joi.string().required();
 const verifiedUserInformationSchema = Joi.boolean().default(false).required();;
 const tweetsSecuredUserInformationSchema = Joi.boolean().default(false).required();;
 const accountCreationUserInformationSchema = Joi.object().default({ date: null, hour: null, country: null }).required();
@@ -18,6 +19,7 @@ const userInformationSchema = {
     name: nameUserInformationSchema,
     phoneNumber: phoneNumberUserInformationSchema,
     email: emailUserInformationSchema,
+    user: userUserInformationSchema,
     verified: verifiedUserInformationSchema,
     tweetsSecured: tweetsSecuredUserInformationSchema,
     accountCreation: accountCreationUserInformationSchema,
@@ -42,6 +44,7 @@ const updateUserInformationSchema = {
     name: nameUserInformationSchema,
     phoneNumber: phoneNumberUserInformationSchema,
     email: emailUserInformationSchema,
+    user: userUserInformationSchema,
     verified: verifiedUserInformationSchema,
     tweetsSecured: tweetsSecuredUserInformationSchema,
     accountCreation: accountCreationUserInformationSchema,
