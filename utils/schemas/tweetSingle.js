@@ -12,17 +12,10 @@ const tweetSchema = {
 }
 
 const createTweetSchema = {
-    ...tweetSchema,
-    isAdmin: Joi.boolean()
-}
-
-const createProviderTweetSchema = {
-    ...tweetSchema,
-    apiKeyToken: Joi.string().required()
+    ...tweetSchema
 }
 
 module.exports = {
     tweetIdSchema,
-    createTweetSchema,
-    createProviderTweetSchema
+    createTweetSchema
 };
