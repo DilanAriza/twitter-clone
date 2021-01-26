@@ -15,6 +15,13 @@ class ContentCreation {
         const tweetCreated = await this.mongoDB.create(collectionSelected, tweet);
         return tweetCreated;
     }
+
+    async getContents({ collection, tags }) {
+        const query = tags && { tags: { $in: tags } };
+        var collectionSelected = this.varsCollections[collection];
+        const contents = await this.mongoDB.getAll(collectionSelected, query);
+        return contents || [];
+    }
 }
 
 module.exports = ContentCreation;

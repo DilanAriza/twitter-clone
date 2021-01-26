@@ -5,7 +5,7 @@ const ContentCreationService = require('../services/contentCreation');
 
 //Schemas
 const {
-    createTweetSchema,
+    createSingleTweetSchema,
     tweetIdSchema,
 } = require('../utils/schemas/tweetSingle');
 
@@ -34,11 +34,52 @@ function contentCreationApi(app) {
     //Initial instance for the services
     const contentCreation = new ContentCreationService();
 
+    router.get(
+        '/',
+        passport.authenticate('jwt', { session: false }),
+        scopesValidationHandler(['read:tweet']),
+        async function(req, res, next) {
+            cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
+
+            const { tags } = req.query;
+
+            try {
+
+                //Get all tweets from collections
+                const allSingleTweets = await contentCreation.getContents({ collection: 'sin', tags });
+                const allReTweets = await contentCreation.getContents({ collection: 'ret', tags });
+                const allQuotedTweets = await contentCreation.getContents({ collection: 'quo', tags });
+
+                //organized data
+                const dataorganizedallSingleTweets = allSingleTweets.sort(function(a, b) {
+                    asd = new Date(a.tweetCreation.date).getTime();
+                    bsd = new Date(b.tweetCreation.date).getTime();
+
+                    return ((asd > bsd) ? -1 : ((asd < bsd) ? 1 : 0));
+
+                });
+
+                //Send response to client
+                res.status(200).json({
+                    data: {
+                        dataorganizedallSingleTweets,
+                        allReTweets,
+                        allQuotedTweets
+                    },
+                    message: 'Contents listed'
+                })
+
+            } catch (error) {
+                next(error)
+            }
+        }
+    )
+
     router.post(
         '/single',
         passport.authenticate('jwt', { session: false }),
         scopesValidationHandler(['create:tweet']),
-        validationHandler(createTweetSchema),
+        validationHandler(createSingleTweetSchema),
         async function(req, res, next) {
 
             //Find the content in body
