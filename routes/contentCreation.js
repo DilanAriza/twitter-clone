@@ -9,6 +9,11 @@ const {
     tweetIdSchema,
 } = require('../utils/schemas/tweetSingle');
 
+const {
+    createReTweetSchema,
+    reTweetIdSchema
+} = require('../utils/schemas/reTweet');
+
 //Validations and middlewares
 const validationHandler = require('../utils/middleware/validationHandler');
 const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
@@ -25,6 +30,14 @@ const {
 // JWT Strategy
 require('../utils/auth/strategies/jwt');
 
+//Functions
+const {
+    organizedDataToDate
+} = require('../utils/functions/organizedData');
+
+
+
+// PRINCIPAL STRATEGY
 function contentCreationApi(app) {
 
     //Config the router
@@ -50,21 +63,17 @@ function contentCreationApi(app) {
                 const allReTweets = await contentCreation.getContents({ collection: 'ret', tags });
                 const allQuotedTweets = await contentCreation.getContents({ collection: 'quo', tags });
 
-                //organized data
-                const dataorganizedallSingleTweets = allSingleTweets.sort(function(a, b) {
-                    asd = new Date(a.tweetCreation.date).getTime();
-                    bsd = new Date(b.tweetCreation.date).getTime();
-
-                    return ((asd > bsd) ? -1 : ((asd < bsd) ? 1 : 0));
-
-                });
+                // Organized the data, prepare send to client
+                const dataorganizedallSingleTweets = organizedDataToDate(allSingleTweets, "tweetCreation", "date");
+                const dataorganizedallReTweets = organizedDataToDate(allReTweets, "tweetCreation", "date");
+                const dataorganizedallQuotedTweets = organizedDataToDate(allQuotedTweets, "tweetCreation", "date");
 
                 //Send response to client
                 res.status(200).json({
                     data: {
                         dataorganizedallSingleTweets,
-                        allReTweets,
-                        allQuotedTweets
+                        dataorganizedallReTweets,
+                        dataorganizedallQuotedTweets
                     },
                     message: 'Contents listed'
                 })
@@ -100,6 +109,34 @@ function contentCreationApi(app) {
             }
         }
     )
+
+    router.post(
+        '/rt',
+        passport.authenticate('jwt', { session: false }),
+        scopesValidationHandler(['create:re-tweet']),
+        validationHandler(createReTweetSchema),
+        async function(req, res, next) {
+
+            //Find the content in body
+            const { body: tweet } = req;
+
+            try {
+
+                //Creating content data 
+                const createdReTweetId = await contentCreation.createContent({ collection: 'ret', tweet });
+
+                //response with user data
+                res.status(201).json({
+                    data: createdReTweetId,
+                    message: 're-Tweet created successfully'
+                })
+            } catch (error) {
+                next(error)
+            }
+        }
+    )
+
 }
+
 
 module.exports = contentCreationApi;
