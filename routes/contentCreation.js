@@ -86,18 +86,25 @@ function contentCreationApi(app) {
             //Find the content in body
             const { body: tweet } = req;
 
-            try {
+            //Verify the session, the user is required 
+            if (tweet.userId === ("" + req.user._id + "")) {
 
-                //Creating content data 
-                const createdTweetId = await contentCreation.createContent({ collection: 'sin', tweet });
+                try {
 
-                //response with user data
-                res.status(201).json({
-                    data: createdTweetId,
-                    message: 'Tweet created successfully'
-                })
-            } catch (error) {
-                next(error)
+                    //Creating content data 
+                    const createdTweetId = await contentCreation.createContent({ collection: 'sin', tweet });
+
+                    //response with user data
+                    res.status(201).json({
+                        data: createdTweetId,
+                        message: 'Tweet created successfully'
+                    })
+                } catch (error) {
+                    next(error)
+                }
+
+            } else {
+                next(new Error("No have permisions to modify data " + req.user._id));
             }
         }
     )
@@ -112,18 +119,26 @@ function contentCreationApi(app) {
             //Find the content in body
             const { body: tweet } = req;
 
-            try {
 
-                //Creating content data 
-                const createdReTweetId = await contentCreation.createContent({ collection: 'ret', tweet });
+            //Verify the session, the user is required 
+            if (tweet.userId === ("" + req.user._id + "")) {
 
-                //response with user data
-                res.status(201).json({
-                    data: createdReTweetId,
-                    message: 're-Tweet created successfully'
-                })
-            } catch (error) {
-                next(error)
+                try {
+
+                    //Creating content data 
+                    const createdReTweetId = await contentCreation.createContent({ collection: 'ret', tweet });
+
+                    //response with user data
+                    res.status(201).json({
+                        data: createdReTweetId,
+                        message: 're-Tweet created successfully'
+                    })
+                } catch (error) {
+                    next(error)
+                }
+
+            } else {
+                next(new Error("No have permisions to modify data " + req.user._id));
             }
         }
     )
@@ -138,21 +153,28 @@ function contentCreationApi(app) {
             //Find the content in body
             const { body: tweet } = req;
 
-            try {
+            //Verify the session, the user is required
+            if (tweet.userId === ("" + req.user._id + "")) {
 
-                //Creating content data 
-                const createdQuotedTweettId = await contentCreation.createContent({
-                    collection: 'quo',
-                    tweet
-                });
+                try {
 
-                //response with user data
-                res.status(201).json({
-                    data: createdQuotedTweettId,
-                    message: 'Quoted Tweet created successfully'
-                })
-            } catch (error) {
-                next(error)
+                    //Creating content data 
+                    const createdQuotedTweettId = await contentCreation.createContent({
+                        collection: 'quo',
+                        tweet
+                    });
+
+                    //response with user data
+                    res.status(201).json({
+                        data: createdQuotedTweettId,
+                        message: 'Quoted Tweet created successfully'
+                    })
+                } catch (error) {
+                    next(error)
+                }
+
+            } else {
+                next(new Error("No have permisions to modify data " + req.user._id));
             }
         }
     )
