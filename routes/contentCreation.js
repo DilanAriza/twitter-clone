@@ -17,8 +17,7 @@ const cacheResponse = require('../utils/cacheResponse');
 
 //Time middlewares
 const {
-    FIVE_MINUTES_IN_SECONDS,
-    SIXTY_MINUTES_IN_SECONDS
+    FIVE_MINUTES_IN_SECONDS
 } = require('../utils/time');
 
 // JWT Strategy
