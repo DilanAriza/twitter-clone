@@ -4,15 +4,9 @@ const passport = require('passport');
 const ContentCreationService = require('../services/contentCreation');
 
 //Schemas
-const {
-    createSingleTweetSchema,
-    tweetIdSchema,
-} = require('../utils/schemas/tweetSingle');
-
-const {
-    createReTweetSchema,
-    reTweetIdSchema
-} = require('../utils/schemas/reTweet');
+const { createSingleTweetSchema } = require('../utils/schemas/tweetSingle');
+const { createReTweetSchema } = require('../utils/schemas/reTweet');
+const { createQuotedTweetSchema } = require('../utils/schemas/quotedTweet');
 
 //Validations and middlewares
 const validationHandler = require('../utils/middleware/validationHandler');
@@ -49,8 +43,6 @@ function contentCreationApi(app) {
 
     router.get(
         '/',
-        passport.authenticate('jwt', { session: false }),
-        scopesValidationHandler(['read:tweet']),
         async function(req, res, next) {
             cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
 
@@ -129,6 +121,35 @@ function contentCreationApi(app) {
                 res.status(201).json({
                     data: createdReTweetId,
                     message: 're-Tweet created successfully'
+                })
+            } catch (error) {
+                next(error)
+            }
+        }
+    )
+
+    router.post(
+        '/quoted',
+        passport.authenticate('jwt', { session: false }),
+        scopesValidationHandler(['create:quote-tweet']),
+        validationHandler(createQuotedTweetSchema),
+        async function(req, res, next) {
+
+            //Find the content in body
+            const { body: tweet } = req;
+
+            try {
+
+                //Creating content data 
+                const createdQuotedTweettId = await contentCreation.createContent({
+                    collection: 'quo',
+                    tweet
+                });
+
+                //response with user data
+                res.status(201).json({
+                    data: createdQuotedTweettId,
+                    message: 'Quoted Tweet created successfully'
                 })
             } catch (error) {
                 next(error)
