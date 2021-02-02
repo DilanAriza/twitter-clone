@@ -26,9 +26,7 @@ app.use(express.json());
 app.use(helmet());
 
 // Routes in action
-authApi(app);
-userInformation(app);
-contentCreation(app)
+require('./routes/index')(app)
 
 //Errors
 app.use(notFoundHandler);
