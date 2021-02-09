@@ -75,6 +75,53 @@ function contentCreationApi(app) {
         }
     )
 
+    router.get(
+        '/:id',
+        async function(req, res, next) {
+            cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
+
+            const { id } = req.params;
+
+            try {
+                console.log(id)
+
+                var dataResult = [];
+
+                //Get all tweets from collections
+                const FindedSingleTweets = await contentCreation.getContent({ collection: 'sin', id });
+                const FindedReTweets = await contentCreation.getContent({ collection: 'ret', id });
+                const FindedQuotedTweets = await contentCreation.getContent({ collection: 'quo', id });
+
+                console.log(FindedSingleTweets)
+                console.log(FindedReTweets)
+                console.log(FindedQuotedTweets)
+
+                if (typeof FindedSingleTweets[0] !== null && typeof FindedSingleTweets[0] !== 'undefined') {
+                    dataResult.push(FindedSingleTweets);
+                }
+
+                if (typeof FindedReTweets[0] !== null && typeof FindedReTweets[0] !== 'undefined') {
+                    dataResult.push(FindedReTweets);
+                }
+
+                if (typeof FindedQuotedTweets[0] !== null && typeof FindedQuotedTweets[0] !== 'undefined') {
+                    dataResult.push(FindedQuotedTweets);
+                }
+
+                //Send response to client
+                res.status(200).json({
+                    data: {
+                        dataResult
+                    },
+                    message: 'Contents listed'
+                })
+
+            } catch (error) {
+                next(error)
+            }
+        }
+    )
+
     router.post(
         '/single',
         passport.authenticate('jwt', { session: false }),

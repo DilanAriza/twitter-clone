@@ -16,6 +16,12 @@ class ContentCreation {
         return tweetCreated;
     }
 
+    async getContent({ collection, id }) {
+        var collectionSelected = this.varsCollections[collection];
+        const content = await this.mongoDB.get(collectionSelected, id)
+        return content || [];
+    }
+
     async getContents({ collection, tags }) {
         const query = tags && { tags: { $in: tags } };
         var collectionSelected = this.varsCollections[collection];
