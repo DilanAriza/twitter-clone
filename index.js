@@ -16,11 +16,6 @@ const notFoundHandler = require('./utils/middleware/notFoundHandler');
 //Config file
 const { config } = require('./config/index.js');
 
-//Routers
-const authApi = require('./routes/auth');
-const userInformation = require('./routes/userInformation');
-const contentCreation = require('./routes/contentCreation');
-
 //Config middlewares
 app.use(express.json());
 app.use(helmet());
